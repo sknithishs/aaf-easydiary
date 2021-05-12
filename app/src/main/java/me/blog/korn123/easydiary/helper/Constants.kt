@@ -479,6 +479,7 @@ const val APP_LOCK_ENABLE = "application_lock"
 const val APP_LOCK_REQUEST_PASSWORD = "lock_password"
 const val APP_LOCK_SAVED_PASSWORD = "application_lock_password"
 const val APP_LOCK_DEFAULT_PASSWORD = "0000"
+const val APP_LOCK_ENTERED_PASSWORD = "entered_password"
 
 const val DIARY_SEQUENCE = "diary_sequence"
 const val DIARY_CONTENTS_SCROLL_Y = "diary_contents_scroll_y"

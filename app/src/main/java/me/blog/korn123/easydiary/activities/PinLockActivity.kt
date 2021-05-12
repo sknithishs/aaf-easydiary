@@ -3,6 +3,7 @@ package me.blog.korn123.easydiary.activities
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
@@ -10,7 +11,9 @@ import io.github.aafactory.commons.activities.BaseSimpleActivity
 import kotlinx.android.synthetic.main.activity_pin_lock.*
 import me.blog.korn123.commons.utils.FontUtils
 import me.blog.korn123.easydiary.R
+import me.blog.korn123.easydiary.activities.FingerprintLockActivity.Companion.LAUNCHING_MODE
 import me.blog.korn123.easydiary.extensions.*
+import me.blog.korn123.easydiary.helper.EasyDiaryApplication
 
 
 class PinLockActivity : BaseSimpleActivity() {
@@ -54,7 +57,7 @@ class PinLockActivity : BaseSimpleActivity() {
     override fun onResume() {
         super.onResume()
         FontUtils.setFontsTypeface(applicationContext, assets, null, container)
-        infoMessage.text = if (activityMode == ACTIVITY_SETTING) getString(R.string.pin_setting_guide_message) else getString(R.string.pin_unlock_guide_message) 
+        infoMessage.text = if (activityMode == ACTIVITY_SETTING) getString(R.string.pin_setting_guide_message) else getString(R.string.pin_unlock_guide_message)
     }
 
     override fun onBackPressed() {
@@ -107,18 +110,11 @@ class PinLockActivity : BaseSimpleActivity() {
                             }, false)
                         }
                         ACTIVITY_UNLOCK -> {
-                            when (config.aafPinLockSavedPassword == fullPassword) {
-                                true -> {
-                                    pauseLock()
-                                    finish()
-                                }
-                                false -> {
-                                    holdCurrentOrientation()
-                                    showAlertDialog(getString(R.string.pin_verification_fail), DialogInterface.OnClickListener { _, _ ->
-                                        onBackPressed()
-                                    }, false)
-                                }
-                            }
+                            config.aafEnteredPin = fullPassword
+                            Log.w("Full Pass",fullPassword)
+                            Log.w("Config entered", config.aafEnteredPin)
+                            pauseLock()
+                            finish()
                         }
                     }
                 } else {

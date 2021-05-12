@@ -15,10 +15,10 @@ android {
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
     signingConfigs {
         config {
-            keyAlias 'android'
-            keyPassword properties.getProperty("storePassword")
-            storeFile file(properties.getProperty("storeFile"))
-            storePassword properties.getProperty("storePassword")
+            storeFile file('C:\\Users\\nithi\\Developer\\skns.jks')
+            storePassword 'sknsskns'
+            keyAlias 'skns'
+            keyPassword 'sknsskns'
         }
     }
     

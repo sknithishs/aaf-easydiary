@@ -9,6 +9,7 @@ import io.realm.Realm
  */
 
 class EasyDiaryApplication : MultiDexApplication() {
+
     override fun onCreate() {
         super.onCreate()
         Realm.init(this)
@@ -16,6 +17,7 @@ class EasyDiaryApplication : MultiDexApplication() {
     }
 
     companion object {
+        var enteredPassword: String = "0000"
         var context: Context? = null
     }
 }

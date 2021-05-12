@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "me.blog.korn123.easydiary",
+  "variantName": "processFossReleaseResources",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "versionCode": 229,
+      "versionName": "1.4.163",
+      "outputFile": "easy_diary-1.4.163-20210512163852.apk"
+    }
+  ]
+}

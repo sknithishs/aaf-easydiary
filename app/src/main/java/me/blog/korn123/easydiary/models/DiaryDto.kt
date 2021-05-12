@@ -49,6 +49,8 @@ open class DiaryDto : RealmObject {
 
     var location: Location? = null
 
+    var secretDiaryCode: String = "0000"
+
     constructor()
 
     constructor(sequence: Int, currentTimeMillis: Long, title: String, contents: String, isEncrypt: Boolean, encryptKeyHash: String) : this(sequence, currentTimeMillis, title, contents) {

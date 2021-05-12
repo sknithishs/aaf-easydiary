@@ -1,6 +1,10 @@
 package me.blog.korn123.easydiary.helper
 
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
+import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import android.util.Log
 import io.realm.*
 import me.blog.korn123.easydiary.extensions.config
 import me.blog.korn123.easydiary.models.ActionLog
@@ -8,6 +12,7 @@ import me.blog.korn123.easydiary.models.Alarm
 import me.blog.korn123.easydiary.models.DiaryDto
 import me.blog.korn123.easydiary.models.PhotoUriDto
 import org.apache.commons.lang3.StringUtils
+
 
 /**
  * Created by CHO HANJOONG on 2017-03-16.
@@ -22,6 +27,7 @@ object EasyDiaryDbHelper {
                 .modules(Realm.getDefaultModule()!!)
                 .build()
     }
+    private var legacyPrefs = PreferenceManager.getDefaultSharedPreferences(EasyDiaryApplication.context)!!
 
     private var mRealmInstance: Realm? = null
 
@@ -78,6 +84,8 @@ object EasyDiaryDbHelper {
                 }
             }
             diaryDto.sequence = sequence
+            diaryDto.secretDiaryCode = legacyPrefs.getString(APP_LOCK_ENTERED_PASSWORD, APP_LOCK_DEFAULT_PASSWORD)!!
+            Log.w("Insert key",legacyPrefs.getString(APP_LOCK_ENTERED_PASSWORD, APP_LOCK_DEFAULT_PASSWORD)!!)
             realm.insert(diaryDto)
         }
     }
@@ -98,16 +106,23 @@ object EasyDiaryDbHelper {
      * @return an in-memory detached copy of managed RealmObjects.
      */
     fun readDiary(query: String?, isSensitive: Boolean = false, startTimeMillis: Long = 0, endTimeMillis: Long = 0, symbolSequence: Int = 0, realmInstance: Realm = getInstance()): List<DiaryDto> {
+        var enteredPin = legacyPrefs.getString(APP_LOCK_ENTERED_PASSWORD, APP_LOCK_DEFAULT_PASSWORD)!!
+        Log.w("Entered Pin",enteredPin)
+        Log.w("Saved Pin",legacyPrefs.getString(APP_LOCK_SAVED_PASSWORD, APP_LOCK_DEFAULT_PASSWORD)!!)
         var results: RealmResults<DiaryDto> = when (StringUtils.isEmpty(query)) {
             true -> {
-                realmInstance.where(DiaryDto::class.java).findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
-
+                if (enteredPin != legacyPrefs.getString(APP_LOCK_SAVED_PASSWORD, APP_LOCK_DEFAULT_PASSWORD)!!) {
+                    realmInstance.where(DiaryDto::class.java).beginGroup().contains("secretDiaryCode", enteredPin).endGroup().findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
+                }
+                else {
+                    realmInstance.where(DiaryDto::class.java).findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
+                }
             }
             false -> {
                 if (isSensitive) {
-                    realmInstance.where(DiaryDto::class.java).beginGroup().contains("contents", query).or().contains("title", query).endGroup().findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
+                    realmInstance.where(DiaryDto::class.java).beginGroup().contains("secretDiaryCode", enteredPin).contains("contents", query).or().contains("title", query).endGroup().findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
                 } else {
-                    realmInstance.where(DiaryDto::class.java).beginGroup().contains("contents", query, Case.INSENSITIVE).or().contains("title", query, Case.INSENSITIVE).endGroup().findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
+                    realmInstance.where(DiaryDto::class.java).beginGroup().contains("secretDiaryCode", enteredPin).contains("contents", query, Case.INSENSITIVE).or().contains("title", query, Case.INSENSITIVE).endGroup().findAll().sort(arrayOf("currentTimeMillis", "sequence"), arrayOf(Sort.DESCENDING, Sort.DESCENDING))
                 }
             }
         }

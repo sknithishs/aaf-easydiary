@@ -1,6 +1,7 @@
 package me.blog.korn123.easydiary.helper
 
 import android.content.Context
+import android.util.Log
 import io.github.aafactory.commons.helpers.BaseConfig
 import io.github.aafactory.commons.utils.CommonUtils
 import me.blog.korn123.easydiary.R
@@ -16,6 +17,10 @@ class Config(context: Context) : BaseConfig(context) {
     companion object {
         fun newInstance(context: Context) = Config(context)
     }
+
+    var aafEnteredPin: String
+        get() = legacyPrefs.getString(APP_LOCK_ENTERED_PASSWORD, APP_LOCK_DEFAULT_PASSWORD)!!
+        set(aafEnteredPin) = legacyPrefs.edit().putString(APP_LOCK_ENTERED_PASSWORD, aafEnteredPin).apply()
 
     var settingFontName: String
         get() = legacyPrefs.getString(SETTING_FONT_NAME, CUSTOM_FONTS_SUPPORTED_LANGUAGE_DEFAULT)!!
